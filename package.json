@@ -1,0 +1,37 @@
+{
+  "name": "tts-api",
+  "version": "1.0.0",
+  "description": "Backend for My TTS App",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint",
+    "serve:dev": "nodemon index.js",
+    "serve:prod": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xvtn/tts-api.git"
+  },
+  "keywords": [
+    "backend"
+  ],
+  "author": "xvtn <me@xvtn.ru>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xvtn/tts-api/issues"
+  },
+  "homepage": "https://github.com/xvtn/tts-api#readme",
+  "devDependencies": {
+    "eslint": "^7.19.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "nodemon": "^2.0.7"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "body-parser": "^1.19.0",
+    "restana": "^4.8.1",
+    "winston": "^3.3.3"
+  }
+}
