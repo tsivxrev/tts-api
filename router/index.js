@@ -1,14 +1,36 @@
-import restana from 'restana';
+import {
+  getCard, addCard, deleteCard, patchCard,
+  patchSettings,
+} from '../controller/index.js';
+import vkHook from '../controller/vkHook.js';
 
-import notFound from './404.js';
-import { card, news } from '../controller/index.js';
+import {
+  userSchema, getCardSchema,
+  addCardSchema, deleteCardSchema, patchCardSchema,
+  userCardSchema, userSettingsSchema, patchSettingsSchema,
+} from '../models/schemas/index.js';
 
-const router = restana({
-  defaultRoute: notFound,
-}).newRouter();
+export default async function routes(fastify) {
+  fastify.addHook('onRequest', vkHook);
 
-router
-  .get('/card', card)
-  .get('/news', news);
+  fastify.setNotFoundHandler((request, reply) => {
+    reply
+      .code(404)
+      .send({
+        code: -1,
+        detail: 'Not found',
+      });
+  });
 
-export default router;
+  fastify
+    .get('/user', userSchema, async (request) => request.user)
+
+    .get('/user/cards', userCardSchema, async (request) => request.user.cards)
+    .get('/user/cards/:id', getCardSchema, getCard)
+    .patch('/user/cards/:id', patchCardSchema, patchCard)
+    .delete('/user/cards/:id', deleteCardSchema, deleteCard)
+    .post('/user/cards', addCardSchema, addCard)
+
+    .get('/user/settings', userSettingsSchema, async (request) => request.user.settings)
+    .patch('/user/settings', patchSettingsSchema, patchSettings);
+}

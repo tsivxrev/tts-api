@@ -4,40 +4,51 @@
 //
 
 import dotenv from 'dotenv';
-import restana from 'restana';
-import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
-import { logger } from './lib/logger.js';
+import fastify from 'fastify';
+import mongo from './plugins/mongo.js';
 
-import vk from './controller/vk.js';
 import router from './router/index.js';
-import notFound from './router/404.js';
 
 dotenv.config();
-const PORT = process.env.PORT || 3000;
-
-mongoose.connect(process.env.MONGO_URL, {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true,
-  socketTimeoutMS: 10000,
-  connectTimeoutMS: 10000,
+const service = fastify({
+  logger: {
+    prettyPrint: true,
+    serializers: {
+      res(reply) {
+        return {
+          statusCode: reply.statusCode,
+        };
+      },
+      req(request) {
+        return {
+          method: request.method,
+          url: request.url,
+          path: request.path,
+          parameters: request.parameters,
+          headers: request.headers,
+        };
+      },
+    },
+  },
 });
 
-mongoose.connection.on('error', (error) => {
-  logger.error(error, { label: 'MongoDB' });
+service.register(mongo, {
+  url: process.env.MONGO_URL,
+  params: {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    socketTimeoutMS: 10000,
+    connectTimeoutMS: 10000,
+  },
 });
-mongoose.connection.on('connected', () => logger.info({ message: 'Connected', label: 'MongoDB' }));
+service.register(router, { prefix: '/v1' });
 
-const service = restana({
-  defaultRoute: notFound,
-});
-
-service.use(bodyParser.json());
-service.use(vk());
-service.use('/v1', router);
-
-const profiler = logger.startTimer();
-service.start(PORT).then(() => {
-  profiler.done({ message: `Started on port ${PORT}`, label: 'Service' });
-});
+const start = async () => {
+  try {
+    await service.listen(process.env.PORT);
+  } catch (err) {
+    service.log.error(err);
+    process.exit(1);
+  }
+};
+start();

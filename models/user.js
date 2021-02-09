@@ -27,10 +27,10 @@ const userSchema = new Schema({
   },
   cards: [cardSchema],
   settings: {
-    theme: {
-      mainСard: { type: String, default: '' },
-      type: { type: String, enum: ['light', 'dark'], default: 'light' },
+    main: {
+      type: String, minlength: 10, maxlength: 19, default: null,
     },
+    theme: { type: String, enum: ['light', 'dark'], default: 'light' },
   },
 });
 

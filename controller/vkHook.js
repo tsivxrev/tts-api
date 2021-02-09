@@ -31,32 +31,35 @@ const check = (params) => {
   return sign;
 };
 
-export default () => async (req, res, next) => {
-  const { headers } = req;
+export default async (request, reply) => {
+  const { headers } = request;
 
   if (!headers['x-vk-sign']) {
-    res.send({
-      code: -3,
-      detail: 'This app is intended to be used in VK environment only',
-    }, 401);
+    reply
+      .code(401)
+      .send({
+        code: 42,
+        detail: 'This app is intended to be used in VK environment only',
+      });
   } else {
     const params = parse(headers['x-vk-sign']);
     const sign = check(params);
 
     if (sign !== params.sign) {
-      res.send({
-        code: -4,
-        detail: 'Security error',
-      }, 401);
-    } else {
-      let user = await User.findOne({ id: Number(params.vk_user_id) });
-      if (!user) {
-        user = new User({ id: params.vk_user_id });
-        await user.save();
-      }
-
-      req.user = user;
-      await next();
+      reply
+        .code(401)
+        .send({
+          code: 42,
+          detail: 'Security error',
+        });
     }
+
+    let user = await User.findOne({ id: Number(params.vk_user_id) });
+    if (!user) {
+      user = new User({ id: params.vk_user_id });
+      await user.save();
+    }
+
+    request.user = user;
   }
 };
