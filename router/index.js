@@ -7,7 +7,7 @@ import vkHook from '../controller/vkHook.js';
 import {
   userSchema, getCardSchema,
   addCardSchema, deleteCardSchema, patchCardSchema,
-  userCardSchema, userSettingsSchema, patchSettingsSchema,
+  userCardsSchema, userSettingsSchema, patchSettingsSchema,
 } from '../models/schemas/index.js';
 
 export default async function routes(fastify) {
@@ -25,7 +25,7 @@ export default async function routes(fastify) {
   fastify
     .get('/user', userSchema, async (request) => request.user)
 
-    .get('/user/cards', userCardSchema, async (request) => request.user.cards)
+    .get('/user/cards', userCardsSchema, async (request) => request.user.cards)
     .get('/user/cards/:id', getCardSchema, getCard)
     .patch('/user/cards/:id', patchCardSchema, patchCard)
     .delete('/user/cards/:id', deleteCardSchema, deleteCard)

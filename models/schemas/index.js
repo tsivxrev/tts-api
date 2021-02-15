@@ -28,14 +28,16 @@ const cardSchema = {
   },
 };
 
-const userCardSchema = {
+const userCardsSchema = {
   schema: {
     response: {
       200: {
-        type: 'object',
-        properties: {
-          name: { type: 'string' },
-          id: { type: 'string' },
+        type: 'array',
+        items: {
+          properties: {
+            name: { type: 'string' },
+            id: { type: 'string' },
+          },
         },
       },
     },
@@ -210,5 +212,5 @@ const patchSettingsSchema = {
 export {
   newsSchema, cardSchema, userSchema, getCardSchema,
   addCardSchema, deleteCardSchema, patchCardSchema,
-  userCardSchema, userSettingsSchema, patchSettingsSchema,
+  userCardsSchema, userSettingsSchema, patchSettingsSchema,
 };
